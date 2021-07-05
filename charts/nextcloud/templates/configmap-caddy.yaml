@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-caddy
+data:
+  Caddyfile: |
+    http://{{ .Values.nextcloud.domain }}:8080 {
+      root * /app/nextcloud
+      file_server
+
+      log {
+          output stdout
+          format single_field common_log
+      }
+
+      php_fastcgi 127.0.0.1:{{ .Values.php.service.port }}
+      
+      redir /.well-known/carddav /remote.php/dav 301
+      redir /.well-known/caldav /remote.php/dav 301
+
+      @forbidden {
+          path /.htaccess
+          path /data/*
+          path /config/*
+          path /db_structure
+          path /.xml
+          path /README
+          path /3rdparty/*
+          path /lib/*
+          path /templates/*
+          path /occ
+          path /console.php
+      }
+
+      respond @forbidden 403
+    }

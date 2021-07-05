@@ -1,0 +1,25 @@
+{{- if .Values.nextcloud.webcron.enabled -}}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-webcron
+spec:
+  schedule: "*/5 * * * *"
+  startingDeadlineSeconds: 240
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: {{ .Release.Name }}-webcron
+              image: busybox
+              envFrom:
+              - configMapRef:
+                  name: {{ .Release.Name }}
+              args:
+                - /bin/sh
+                - -c
+                - wget --spider --no-check-certificate "https://${NC_DOMAIN}/cron.php"
+          restartPolicy: OnFailure
+{{- end }}

@@ -1,0 +1,258 @@
+# Default values for nextcloud.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nextcloud:
+  ## Add annotations to all the deployed resources
+  commonAnnotations: {}
+
+  labels: {}
+
+  replicaCount: 1
+
+  image:
+    repository: caddy
+    pullPolicy: IfNotPresent
+    ## Overrides the image tag whose default is the chart appVersion.
+    tag: "2.4.3-alpine"
+    init:
+      repository: linogics/nextcloud-php-fpm
+      pullPolicy: IfNotPresent
+      tag: "8.0.8-alpine3.14"
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: false
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  podAnnotations: {}
+
+  podSecurityContext:
+    fsGroup: 82
+
+  securityContext:
+    runAsUser: 82
+    runAsGroup: 82
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+    # capabilities:
+    #   drop:
+    #   - ALL
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+    # className: ""
+    # annotations:
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # hosts:
+      # - host: my.domain.com
+        # paths:
+          # - path: /
+            # pathType: Prefix
+    # tls:
+    # - secretName: tls-my-domain-com
+      # hosts:
+      # - my.domain.com
+
+  resources: {}
+    ## We usually recommend not to specify default resources and to leave this as
+    ## a conscious choice for the user. This also increases chances charts run on 
+    ## environments with little resources, such as Minikube. If you do want to 
+    ## specify resources, uncomment the following lines, adjust them as necessary,
+    ## and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 60
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+
+  domain: my.domain.com
+  adminUsername: administrator
+  adminPassword: myTopSecretPaSSword
+
+  ## If you're going to use your own secret, make sure that it contains the
+  ## following keys:
+  ## POSTGRES_USER
+  ## POSTGRES_PASSWORD
+  ## POSTGRES_DB
+  ## REDIS_PASSWORD
+  ## NC_ADMIN_USERNAME
+  ## NC_ADMIN_PASSWORD
+
+  # existingSecret: nextcloud-secrets
+
+  ## Remove the skeleton folder after downloading Nextcloud and disable it 
+  ## in config.php
+  deleteSkeletonFolder: true
+
+  ## Disable Nextcloud apps during initialization. You can still re-enable 
+  ## them later.
+  apps:
+    disable: []
+    install: []
+
+  ## Add any custom OCC commands you want to run during initialization:
+  ## $ php occ <command>
+  customOCC: []
+  # - theming:config color '#222222'
+
+  webcron:
+    enabled: true
+
+  storage:
+    # storageClass: local-path
+    storageSize: 10G
+
+## php-fpm settings. The values below are recommended by Nextcloud.
+## See: https://docs.nextcloud.com/server/21/admin_manual/installation/server_tuning.html
+php:
+  image:
+    repository: linogics/nextcloud-php-fpm
+    pullPolicy: IfNotPresent
+    tag: "8.0.8-alpine3.14"
+  securityContext:
+    runAsUser: 82
+    runAsGroup: 82
+    runAsNonRoot: true
+    readOnlyRootFilesystem: true
+  resources: {}
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  service:
+    port: 9000
+  readinessProbe:
+    enabled: true
+    tcpSocket:
+      port: 9000
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  livenessProbe:
+    enabled: true
+    tcpSocket:
+      port: 9000
+    initialDelaySeconds: 15
+    periodSeconds: 30
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 5
+  pm:
+    max_children: 120
+    start_servers: 12
+    min_spare_servers: 6
+    max_spare_servers: 18
+  opcache:
+    enable: 1
+    interned_strings_buffer: 8
+    max_accelerated_files: 10000
+    memory_consumption: 128
+    save_comments: 1
+    revalidate_freq: 1
+  apc:
+    shm_size: 256M
+    shm_segments: 1
+    ttl: 7200
+    user_ttl: 7200
+    gc_ttl: 3600
+    num_files_hint: 1024
+    max_file_size: 5M
+  disable_functions: []
+
+redis:
+  auth:
+    enabled: true
+    ## Helm will autogenerate a password if you don't set your own one
+    # password: TopSecretPaSSword
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext:
+    readOnlyRootFilesystem: true
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  service:
+    type: ClusterIP
+    port: 6379
+  image:
+    repository: redis
+    tag: 6.2.4-alpine3.13
+    pullPolicy: IfNotPresent
+
+postgres:
+  ## Helm will autogenerate a password if you don't set your own one
+  # username: nextcloud
+  # password: TopSecretPaSSword
+  # postgresPassword: TopSecretPaSSword
+  # database: nextcloud
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 70
+    runAsUser: 70
+    runAsGroup: 70
+    runAsNonRoot: true
+  securityContext:
+    readOnlyRootFilesystem: true
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  service:
+    type: ClusterIP
+    port: 5432
+  image:
+    repository: postgres
+    tag: 13.3-alpine
+    pullPolicy: IfNotPresent
+  storage:
+    storageSize: 2Gi

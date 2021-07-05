@@ -1,0 +1,28 @@
+{{- if .Values.nextcloud.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "nextcloud.fullname" . }}
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "nextcloud.fullname" . }}
+  minReplicas: {{ .Values.nextcloud.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.nextcloud.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.nextcloud.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.nextcloud.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.nextcloud.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.nextcloud.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

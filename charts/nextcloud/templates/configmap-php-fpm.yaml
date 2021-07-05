@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-php-fpm
+data:
+  php-fpm.conf: |
+    [global]
+    daemonize = no
+    error_log = /proc/self/fd/2
+    log_limit = 8192
+    pid = /app/tmp/php-fpm.pid
+
+    [nextcloud]
+    prefix = /app
+    listen = 127.0.0.1:{{ .Values.php.service.port }}
+    access.log = /proc/self/fd/2
+    pm = dynamic
+    pm.max_children = {{ .Values.php.pm.max_children | default 120 }}
+    pm.start_servers = {{ .Values.php.pm.start_servers | default 12 }}
+    pm.min_spare_servers = {{ .Values.php.pm.min_spare_servers | default 6 }}
+    pm.max_spare_servers = {{ .Values.php.pm.max_spare_servers | default 18 }}
+    env[HOSTNAME] = {{ .Values.nextcloud.domain }}
+    env[PATH] = /app
+    env[TMPDIR] = /app/tmp
+    env[TEMP] = /app/tmp
+    env[TMP] = /app/tmp
+    clear_env = no
+    decorate_workers_output = no
+    catch_workers_output = yes
+    php_value[memory_limit] = 1024M
+    php_admin_flag[log_errors] = on
+    php_admin_flag[display_errors] = off
+    php_admin_value[error_reporting] = E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED
+    php_admin_value[error_log] = /dev/fd/2
+    php_admin_value[open_basedir] = /app:/usr/share:/usr/local/share/php
+    php_admin_value[upload_tmp_dir] = /app/tmp
+    php_admin_value[session.save_path] = /app/tmp
+    php_admin_value[allow_url_fopen] = on
+    php_admin_value[upload_max_filesize] = 10G
+    php_admin_value[post_max_size] = 10G
+    php_admin_value[memory_limit] = 1024M
+    php_admin_value[disable_functions] = "{{- join "," .Values.php.disable_functions }}"

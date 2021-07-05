@@ -1,0 +1,131 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-init
+data:
+  nextcloud-init.sh: |
+    set -e
+
+    run() {
+      su www-data -p -m -s /bin/sh -c "$*"
+    }
+
+    nc_download() {
+      echo "Downloading and extracting nextcloud ({{ .Chart.AppVersion }}) . . ."
+      wget -O - https://download.nextcloud.com/server/releases/nextcloud-{{ .Chart.AppVersion }}.tar.bz2 | tar xjf -
+
+      {{- if (default .Values.nextcloud.deleteSkeletonFolder true) }}
+      echo "Deleting skeleton folder . . ."
+      rm -rf ${NC_DST_FOLDER}/nextcloud/core/skeleton
+      {{- end }}
+
+      echo "Creating data folder and setting permissions . . ."
+      [ ! -d nextcloud/data ] && mkdir nextcloud/data && chown www-data:www-data nextcloud/data
+      [ ! -d tmp ] && mkdir tmp
+
+      find /app -path /app/nextcloud/data -prune -o -exec chown www-data:www-data {} +
+    }
+    
+    cd ${NC_DST_FOLDER}
+
+    echo "Checking if index.php already present . . ."
+    if [ ! -f "${NC_DST_FOLDER}/nextcloud/index.php" ]; then
+      nc_download
+    else
+      run php nextcloud/occ status | grep 'version:' | egrep -o '([0-9]{1,}\.?){2}([0-9]{1,})'
+      NC_INSTALLED_VERSION=$(run php nextcloud/occ status | grep 'version:' | egrep -o '([0-9]{1,}\.?){2}([0-9]{1,})')
+
+      echo "Installed Version: ${NC_INSTALLED_VERSION}"
+      echo "Target Version: {{ .Chart.AppVersion }}"
+
+      if [ "{{ .Chart.AppVersion }}" != "${NC_INSTALLED_VERSION}" ]; then 
+        echo "Target Version is different from installed Version! Download new version . . ."
+        nc_download
+
+        echo "Running occ upgrade command . . ."
+        run php nextcloud/occ upgrade
+      else
+        echo "Nextcloud is installed and up to date, nothing to do . . ."
+      fi
+    fi
+
+    cd ${NC_DST_FOLDER}/nextcloud
+
+    echo "Checking installation status . . ."
+    if ! run php occ status | grep -q 'installed: true'; then
+      echo "Installing nextcloud . . ."
+      run php occ maintenance:install --database="pgsql" \
+                                      --database-host="{{ .Release.Name }}-postgres" \
+                                      --database-name="${POSTGRES_DB}" \
+                                      --database-user="${POSTGRES_USER}" \
+                                      --database-pass="${POSTGRES_PASSWORD}" \
+                                      --admin-user="${NC_ADMIN_USERNAME}" \
+                                      --admin-pass="${NC_ADMIN_PASSWORD}" \
+                                      --data-dir="${NC_DST_FOLDER}/nextcloud/data"
+
+      echo "Setting set +e since user input can interrupt the script . . ."
+      set +e
+      {{ if gt (len .Values.nextcloud.apps.disable) 0 }}
+      echo "Disabling apps . . ."
+      run php occ app:disable {{ join " " .Values.nextcloud.apps.disable }}
+      {{ end }}
+
+      {{- if gt (len .Values.nextcloud.apps.install) 0 }}
+      for app in {{ join " " .Values.nextcloud.apps.install }}; do
+        echo "Installing app ${app} . . ."
+        run php occ app:install ${app}
+      done
+      {{- end }}
+
+      {{- if gt (len .Values.nextcloud.customOCC) 0 }}
+      {{- range .Values.nextcloud.customOCC }}
+      echo "Executing custom OCC command {{ . }} . . ."
+      run php occ {{ . }}
+      {{ end }}
+      {{- end }}
+
+      echo "Setting set -e again . . ."
+      set -e
+    else
+      echo "Database initialization already done, skipping this step!"
+    fi
+
+    echo "Configuring redis and cache settings . . ."
+    run php occ config:system:set redis host --value="{{ .Release.Name }}-redis"
+    run php occ config:system:set redis port --value="6379"
+    run php occ config:system:set redis dbindex --value="0"
+    run php occ config:system:set redis password --value="${REDIS_PASSWORD}"
+    run php occ config:system:set memcache.distributed --value='\\OC\\Memcache\\Redis'
+    run php occ config:system:set memcache.locking --value='\\OC\\Memcache\\Redis'
+    run php occ config:system:set memcache.local --value='\\OC\\Memcache\\APCu'
+
+    echo "Setting overwrite.cli.url to https://${NC_DOMAIN} . . ."
+    run php occ config:system:set overwrite.cli.url --value="https://${NC_DOMAIN}"
+
+    echo "Setting overwriteprotocol to HTTPS . . ."
+    run php occ config:system:set overwriteprotocol --value="https"
+
+    echo "Adding ${NC_DOMAIN} to trusted_domains . . ."
+    run php occ config:system:set trusted_domains 1 --value="${NC_DOMAIN}"
+
+    {{- if (default .Values.nextcloud.deleteSkeletonFolder true) }}
+    echo "Setting skeleton directory to empty string . . ."
+    run php occ config:system:set skeletondirectory --value="" 
+    {{ end }}
+    
+    {{- if (default .Values.nextcloud.webcron.enabled true) }}
+    echo "Setting background job mode to webcron . . ."
+    run php occ background:webcron
+    {{ end }}
+
+    echo "Setting trusted_proxies  . . ."
+    run php occ config:system:set trusted_proxies --value="0.0.0.0/0"
+
+    echo "Changing TMP directory . . ."
+    run php occ config:system:set tempdirectory --value="${NC_DST_FOLDER}/tmp"
+  
+    echo "Setting log backend to 'errorlog' . . ."
+    run php occ log:manage --backend="errorlog"
+ 
+    echo "Done!"

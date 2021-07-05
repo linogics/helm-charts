@@ -1,0 +1,151 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "nextcloud.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.nextcloud.autoscaling.enabled }}
+  replicas: {{ .Values.nextcloud.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "nextcloud.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.nextcloud.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.nextcloud.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "nextcloud.serviceAccountName" . }}
+      initContainers:
+        - name: nextcloud-init
+          image: "{{ .Values.nextcloud.image.init.repository }}:{{ .Values.nextcloud.image.init.tag }}"
+          command: ["/bin/sh"]
+          args: ["/tmp/nextcloud-init.sh"]
+          imagePullPolicy: Always
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}
+          - secretRef:
+              name: {{ template "nextcloud.secretName" . }}
+          volumeMounts:
+          - mountPath: /app
+            name: {{ .Release.Name }}
+          - mountPath: /usr/local/etc/php/php.ini
+            name: {{ .Release.Name }}-php-ini
+            subPath: php.ini
+            readOnly: true
+          - mountPath: /tmp/nextcloud-init.sh
+            name: {{ .Release.Name }}-init
+            subPath: nextcloud-init.sh
+            readOnly: true   
+      containers:
+        - name: {{ .Release.Name }}
+          securityContext:
+            {{- toYaml .Values.nextcloud.securityContext | nindent 12 }}
+          image: "{{ .Values.nextcloud.image.repository }}:{{ .Values.nextcloud.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.nextcloud.image.pullPolicy }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Release.Name }}
+          - secretRef:
+              name: {{ template "nextcloud.secretName" . }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          {{- if (default .Values.nextcloud.livenessProbe.enabled true) }}
+          livenessProbe:
+            httpGet:
+              path: /status.php
+              port: http
+              httpHeaders:
+              - name: Host
+                value:  {{ .Values.nextcloud.domain | quote }}
+            {{- omit .Values.nextcloud.livenessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if (default .Values.nextcloud.readinessProbe.enabled true) }}
+          readinessProbe:
+            httpGet:
+              path: /status.php
+              port: http
+              httpHeaders:
+              - name: Host
+                value:  {{ .Values.nextcloud.domain | quote }}
+            {{- omit .Values.nextcloud.readinessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /app
+              name: {{ .Release.Name }}
+            - mountPath: /etc/caddy/Caddyfile
+              name: {{ .Release.Name }}-caddy
+              subPath: Caddyfile
+              readOnly: true
+          resources:
+            {{- toYaml .Values.nextcloud.resources | nindent 12 }}
+        - name: {{ .Release.Name }}-php-fpm
+          securityContext:
+            {{- toYaml .Values.php.securityContext | nindent 12 }}
+          image: "{{ .Values.php.image.repository }}:{{ .Values.php.image.tag }}"
+          imagePullPolicy: {{ .Values.php.image.pullPolicy }}
+          {{- if (default .Values.php.livenessProbe.enabled true) }}
+          livenessProbe:
+            {{- omit .Values.php.livenessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if (default .Values.php.readinessProbe.enabled true) }}
+          readinessProbe:
+            {{- omit .Values.php.readinessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: php-fpm
+              containerPort: 9000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /app
+              name: {{ .Release.Name }}
+            - mountPath: /usr/local/etc/php-fpm.conf
+              name: {{ .Release.Name }}-php-fpm
+              subPath: php-fpm.conf
+              readOnly: true
+            - mountPath: /usr/local/etc/php/php.ini
+              name: {{ .Release.Name }}-php-ini
+              subPath: php.ini
+              readOnly: true
+          resources:
+            {{- toYaml .Values.php.resources | nindent 12 }}
+      volumes:
+        - name: {{ .Release.Name }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}
+        - name: {{ .Release.Name }}-php-fpm
+          configMap:
+            name: {{ .Release.Name }}-php-fpm
+        - name: {{ .Release.Name }}-php-ini
+          configMap:
+            name: {{ .Release.Name }}-php-ini
+        - name: {{ .Release.Name }}-caddy
+          configMap:
+            name: {{ .Release.Name }}-caddy
+        - name: {{ .Release.Name }}-init
+          configMap:
+            name: {{ .Release.Name }}-init
+      {{- with .Values.nextcloud.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nextcloud.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nextcloud.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

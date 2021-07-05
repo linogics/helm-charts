@@ -1,0 +1,7 @@
+apiVersion: v2
+name: nextcloud
+description: Nextcloud Helm Chart by linogics.io
+type: application
+version: 21.0.3
+appVersion: "21.0.3"
+
