@@ -55,23 +55,24 @@ nextcloud:
     enabled: false
     # className: ""
     # annotations:
-      # kubernetes.io/ingress.class: nginx
-      # kubernetes.io/tls-acme: "true"
-      # cert-manager.io/cluster-issuer: letsencrypt-prod
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
     # hosts:
-      # - host: my.domain.com
-        # paths:
-          # - path: /
-            # pathType: Prefix
+    # - host: my.domain.com
+    # paths:
+    # - path: /
+    # pathType: Prefix
     # tls:
     # - secretName: tls-my-domain-com
-      # hosts:
-      # - my.domain.com
+    # hosts:
+    # - my.domain.com
 
-  resources: {}
+  resources:
+    {}
     ## We usually recommend not to specify default resources and to leave this as
-    ## a conscious choice for the user. This also increases chances charts run on 
-    ## environments with little resources, such as Minikube. If you do want to 
+    ## a conscious choice for the user. This also increases chances charts run on
+    ## environments with little resources, such as Minikube. If you do want to
     ## specify resources, uncomment the following lines, adjust them as necessary,
     ## and remove the curly braces after 'resources:'.
     # limits:
@@ -125,11 +126,11 @@ nextcloud:
 
   # existingSecret: nextcloud-secrets
 
-  ## Remove the skeleton folder after downloading Nextcloud and disable it 
+  ## Remove the skeleton folder after downloading Nextcloud and disable it
   ## in config.php
   deleteSkeletonFolder: true
 
-  ## Disable Nextcloud apps during initialization. You can still re-enable 
+  ## Disable Nextcloud apps during initialization. You can still re-enable
   ## them later.
   apps:
     disable: []
@@ -159,7 +160,8 @@ php:
     runAsGroup: 82
     runAsNonRoot: true
     readOnlyRootFilesystem: true
-  resources: {}
+  resources:
+    {}
     # limits:
     #   cpu: 100m
     #   memory: 128Mi
@@ -168,24 +170,6 @@ php:
     #   memory: 128Mi
   service:
     port: 9000
-  readinessProbe:
-    enabled: true
-    tcpSocket:
-      port: 9000
-    initialDelaySeconds: 5
-    periodSeconds: 5
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
-  livenessProbe:
-    enabled: true
-    tcpSocket:
-      port: 9000
-    initialDelaySeconds: 15
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
   pm:
     max_children: 120
     start_servers: 12

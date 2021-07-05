@@ -96,14 +96,6 @@ spec:
             {{- toYaml .Values.php.securityContext | nindent 12 }}
           image: "{{ .Values.php.image.repository }}:{{ .Values.php.image.tag }}"
           imagePullPolicy: {{ .Values.php.image.pullPolicy }}
-          {{- if (default .Values.php.livenessProbe.enabled true) }}
-          livenessProbe:
-            {{- omit .Values.php.livenessProbe "enabled" | toYaml | nindent 12 }}
-          {{- end }}
-          {{- if (default .Values.php.readinessProbe.enabled true) }}
-          readinessProbe:
-            {{- omit .Values.php.readinessProbe "enabled" | toYaml | nindent 12 }}
-          {{- end }}
           ports:
             - name: php-fpm
               containerPort: 9000

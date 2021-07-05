@@ -59,19 +59,20 @@ nextcloud:
       kubernetes.io/tls-acme: "true"
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-    - host: my.domain.com
-      paths:
-      - path: /
-        pathType: Prefix
+      - host: my.domain.com
+        paths:
+          - path: /
+            pathType: Prefix
     tls:
-    - secretName: tls-my-domain-com
-      hosts:
-      - my.domain.com
+      - secretName: tls-my-domain-com
+        hosts:
+          - my.domain.com
 
-  resources: {}
+  resources:
+    {}
     ## We usually recommend not to specify default resources and to leave this as
-    ## a conscious choice for the user. This also increases chances charts run on 
-    ## environments with little resources, such as Minikube. If you do want to 
+    ## a conscious choice for the user. This also increases chances charts run on
+    ## environments with little resources, such as Minikube. If you do want to
     ## specify resources, uncomment the following lines, adjust them as necessary,
     ## and remove the curly braces after 'resources:'.
     # limits:
@@ -125,41 +126,41 @@ nextcloud:
 
   # existingSecret: nextcloud-secrets
 
-  ## Remove the skeleton folder after downloading Nextcloud and disable it 
+  ## Remove the skeleton folder after downloading Nextcloud and disable it
   ## in config.php
   deleteSkeletonFolder: true
 
-  ## Disable Nextcloud apps during initialization. You can still re-enable 
+  ## Disable Nextcloud apps during initialization. You can still re-enable
   ## them later.
   apps:
     disable:
-    - accessibility
-    - activity
-    - admin_audit
-    - comments
-    - contactsinteraction
-    - dashboard
-    - encryption
-    - files_external
-    - firstrunwizard
-    - nextcloud_announcements
-    - photos
-    - recommendations
-    - serverinfo
-    - support
-    - survey_client
-    - text
-    - user_status
-    - weather_status
+      - accessibility
+      - activity
+      - admin_audit
+      - comments
+      - contactsinteraction
+      - dashboard
+      - encryption
+      - files_external
+      - firstrunwizard
+      - nextcloud_announcements
+      - photos
+      - recommendations
+      - serverinfo
+      - support
+      - survey_client
+      - text
+      - user_status
+      - weather_status
     install:
-    - breezedark
-    - files_markdown
-    - user_ldap
+      - breezedark
+      - files_markdown
+      - user_ldap
 
   ## Add any custom OCC commands you want to run during initialization:
   ## $ php occ <command>
   customOCC:
-  - theming:config color '#222222'
+    - theming:config color '#222222'
 
   webcron:
     enabled: true
@@ -180,7 +181,8 @@ php:
     runAsGroup: 82
     runAsNonRoot: true
     readOnlyRootFilesystem: true
-  resources: {}
+  resources:
+    {}
     # limits:
     #   cpu: 100m
     #   memory: 128Mi
@@ -189,24 +191,6 @@ php:
     #   memory: 128Mi
   service:
     port: 9000
-  readinessProbe:
-    enabled: true
-    tcpSocket:
-      port: 9000
-    initialDelaySeconds: 5
-    periodSeconds: 5
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
-  livenessProbe:
-    enabled: true
-    tcpSocket:
-      port: 9000
-    initialDelaySeconds: 15
-    periodSeconds: 30
-    timeoutSeconds: 5
-    successThreshold: 1
-    failureThreshold: 5
   pm:
     max_children: 120
     start_servers: 12
@@ -228,71 +212,71 @@ php:
     num_files_hint: 1024
     max_file_size: 5M
   disable_functions:
-  - apache_child_terminate
-  - apache_get_modules
-  - apache_get_version
-  - apache_getenv
-  - apache_note
-  - apache_setenv
-  - diskfreespace
-  - dl
-  - escapeshellarg
-  - escapeshellcmd
-  - exec
-  - ftp_connect
-  - ftp_exec
-  - ftp_get
-  - ftp_login
-  - ftp_nb_fput
-  - ftp_put
-  - ftp_raw
-  - ftp_rawlist
-  - ini_alter
-  - ini_get_all
-  - link
-  - mysql_pconnect
-  - passthru
-  - pcntl_alarm
-  - pcntl_exec
-  - pcntl_fork
-  - pcntl_get_last_error
-  - pcntl_getpriority
-  - pcntl_setpriority
-  - pcntl_signal
-  - pcntl_signal_dispatch
-  - pcntl_sigprocmask
-  - pcntl_sigtimedwait
-  - pcntl_sigwaitinfo
-  - pcntl_strerror
-  - pcntl_wait
-  - pcntl_waitpid
-  - pcntl_wexitstatus
-  - pcntl_wifcontinued
-  - pcntl_wifexited
-  - pcntl_wifsignaled
-  - pcntl_wifstopped
-  - pcntl_wstopsig
-  - pcntl_wtermsig
-  - pfsockopen
-  - phpinfo
-  - popen
-  - posix_getpwuid
-  - posix_kill
-  - posix_mkfifo
-  - posix_setpgid
-  - posix_setsid
-  - posix_setuid
-  - posix_uname
-  - proc_close
-  - proc_get_status
-  - proc_nice
-  - proc_open
-  - proc_terminate
-  - shell_exec
-  - symlink
-  - system
-  - tmpfile
-  - virtual
+    - apache_child_terminate
+    - apache_get_modules
+    - apache_get_version
+    - apache_getenv
+    - apache_note
+    - apache_setenv
+    - diskfreespace
+    - dl
+    - escapeshellarg
+    - escapeshellcmd
+    - exec
+    - ftp_connect
+    - ftp_exec
+    - ftp_get
+    - ftp_login
+    - ftp_nb_fput
+    - ftp_put
+    - ftp_raw
+    - ftp_rawlist
+    - ini_alter
+    - ini_get_all
+    - link
+    - mysql_pconnect
+    - passthru
+    - pcntl_alarm
+    - pcntl_exec
+    - pcntl_fork
+    - pcntl_get_last_error
+    - pcntl_getpriority
+    - pcntl_setpriority
+    - pcntl_signal
+    - pcntl_signal_dispatch
+    - pcntl_sigprocmask
+    - pcntl_sigtimedwait
+    - pcntl_sigwaitinfo
+    - pcntl_strerror
+    - pcntl_wait
+    - pcntl_waitpid
+    - pcntl_wexitstatus
+    - pcntl_wifcontinued
+    - pcntl_wifexited
+    - pcntl_wifsignaled
+    - pcntl_wifstopped
+    - pcntl_wstopsig
+    - pcntl_wtermsig
+    - pfsockopen
+    - phpinfo
+    - popen
+    - posix_getpwuid
+    - posix_kill
+    - posix_mkfifo
+    - posix_setpgid
+    - posix_setsid
+    - posix_setuid
+    - posix_uname
+    - proc_close
+    - proc_get_status
+    - proc_nice
+    - proc_open
+    - proc_terminate
+    - shell_exec
+    - symlink
+    - system
+    - tmpfile
+    - virtual
 
 redis:
   auth:
