@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}
 spec:
-  {{- if .Values.nextcloud.storageClass }}
+  {{- if .Values.nextcloud.storage.storageClass }}
   storageClassName: {{ .Values.nextcloud.storage.storageClass }}
   {{- end }}
   accessModes:

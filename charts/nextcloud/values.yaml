@@ -38,7 +38,7 @@ nextcloud:
     rollingUpdate:
       maxUnavailable: 1
       maxSurge: 1
-
+      
   podAnnotations: {}
 
   podSecurityContext:
@@ -201,8 +201,7 @@ php:
     runAsNonRoot: true
     readOnlyRootFilesystem: true
 
-  resources:
-    {}
+  resources: {}
     # limits:
     #   cpu: 100m
     #   memory: 128Mi
@@ -267,6 +266,10 @@ redis:
   service:
     type: ClusterIP
     port: 6379
+
+  storage:
+    # storageClass: local-path
+    storageSize: 2G
 
 postgres:
   ## Helm will autogenerate a password if you don't set your own one

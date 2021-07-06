@@ -41,13 +41,19 @@ spec:
           ports:
           - name: redis
             containerPort: 6379
+          volumeMounts:
+            - mountPath: /data
+              name: {{ .Release.Name }}-redis
           {{- with .Values.redis.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
-            
           {{- end }}
           resources:
             {{- toYaml .Values.redis.resources | nindent 12 }}
+      volumes:
+        - name: {{ .Release.Name }}-redis
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-redis
       {{- with .Values.redis.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

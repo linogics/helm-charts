@@ -33,6 +33,11 @@ nextcloud:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
 
+  strategy:
+    type: Recreate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   podAnnotations: {}
 
   podSecurityContext:
@@ -68,8 +73,7 @@ nextcloud:
         hosts:
           - my.domain.com
 
-  resources:
-    {}
+  resources: {}
     ## We usually recommend not to specify default resources and to leave this as
     ## a conscious choice for the user. This also increases chances charts run on
     ## environments with little resources, such as Minikube. If you do want to
@@ -97,7 +101,7 @@ nextcloud:
 
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 15
+    initialDelaySeconds: 5
     periodSeconds: 5
     timeoutSeconds: 5
     successThreshold: 1
@@ -105,15 +109,17 @@ nextcloud:
 
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 30
+    initialDelaySeconds: 5
     periodSeconds: 60
     timeoutSeconds: 5
     successThreshold: 1
     failureThreshold: 5
 
+  ## Requiered values
   domain: my.domain.com
   adminUsername: nextcloud_admin
   adminPassword: myTopSecretPaSSword
+  defaultPhoneRegion: DE
 
   ## If you're going to use your own secret, make sure that it contains the
   ## following keys:
@@ -128,39 +134,72 @@ nextcloud:
 
   ## Remove the skeleton folder after downloading Nextcloud and disable it
   ## in config.php
-  deleteSkeletonFolder: true
+  # deleteSkeletonFolder: true
+
+  ## Disable the ability to run the web-based updater
+  # disableWebUpdater: true
+
+  ## Set the default language
+  ## German has to forms: de and de_DE for formal German
+  # defaultLanguage: en
+  # forceLanguage: false
+
+  # defaultLocale: en_US
+  # forceLocale: false
+
+  # disableKnowledgeBase: false
+
+  # allowUserChangeDisplayName: true
+
+  mail:
+    enabled: false
+    # domain: my.domain.com
+    # fromAddress: nextcloud@my.domain.com
+    # debug: false
+    # plaintextOnly: false
+    # mode: smtp # currently only smtp mode is supported
+    # smtp:
+      # host: mail.provider.org
+      # port: 25
+      # timeout: 10
+      # secure: tls # ssl = SSL/TLS, tls = STARTTLS
+    # auth:
+      # enabled: true
+      # type: LOGIN # LOGIN or PLAIN
+      # username: buddy@mail.provider.org
+      # password: SuperDuperEMailPaSSword
 
   ## Disable Nextcloud apps during initialization. You can still re-enable
   ## them later.
   apps:
     disable:
-      - accessibility
-      - activity
-      - admin_audit
-      - comments
-      - contactsinteraction
-      - dashboard
-      - encryption
-      - files_external
-      - firstrunwizard
-      - nextcloud_announcements
-      - photos
-      - recommendations
-      - serverinfo
-      - support
-      - survey_client
-      - text
-      - user_status
-      - weather_status
+    - accessibility
+    - activity
+    - admin_audit
+    - comments
+    - contactsinteraction
+    - dashboard
+    - encryption
+    - files_external
+    - firstrunwizard
+    - nextcloud_announcements
+    - photos
+    - recommendations
+    - serverinfo
+    - support
+    - survey_client
+    - text
+    - user_status
+    - weather_status
     install:
-      - breezedark
-      - files_markdown
-      - user_ldap
+    - breezedark
+    - files_markdown
+    - user_ldap
 
   ## Add any custom OCC commands you want to run during initialization:
   ## $ php occ <command>
   customOCC:
-    - theming:config color '#222222'
+  - theming:config color '#222222'
 
   webcron:
     enabled: true
@@ -181,8 +220,7 @@ php:
     runAsGroup: 82
     runAsNonRoot: true
     readOnlyRootFilesystem: true
-  resources:
-    {}
+  resources: {}
     # limits:
     #   cpu: 100m
     #   memory: 128Mi
@@ -212,92 +250,105 @@ php:
     num_files_hint: 1024
     max_file_size: 5M
   disable_functions:
-    - apache_child_terminate
-    - apache_get_modules
-    - apache_get_version
-    - apache_getenv
-    - apache_note
-    - apache_setenv
-    - diskfreespace
-    - dl
-    - escapeshellarg
-    - escapeshellcmd
-    - exec
-    - ftp_connect
-    - ftp_exec
-    - ftp_get
-    - ftp_login
-    - ftp_nb_fput
-    - ftp_put
-    - ftp_raw
-    - ftp_rawlist
-    - ini_alter
-    - ini_get_all
-    - link
-    - mysql_pconnect
-    - passthru
-    - pcntl_alarm
-    - pcntl_exec
-    - pcntl_fork
-    - pcntl_get_last_error
-    - pcntl_getpriority
-    - pcntl_setpriority
-    - pcntl_signal
-    - pcntl_signal_dispatch
-    - pcntl_sigprocmask
-    - pcntl_sigtimedwait
-    - pcntl_sigwaitinfo
-    - pcntl_strerror
-    - pcntl_wait
-    - pcntl_waitpid
-    - pcntl_wexitstatus
-    - pcntl_wifcontinued
-    - pcntl_wifexited
-    - pcntl_wifsignaled
-    - pcntl_wifstopped
-    - pcntl_wstopsig
-    - pcntl_wtermsig
-    - pfsockopen
-    - phpinfo
-    - popen
-    - posix_getpwuid
-    - posix_kill
-    - posix_mkfifo
-    - posix_setpgid
-    - posix_setsid
-    - posix_setuid
-    - posix_uname
-    - proc_close
-    - proc_get_status
-    - proc_nice
-    - proc_open
-    - proc_terminate
-    - shell_exec
-    - symlink
-    - system
-    - tmpfile
-    - virtual
+  - apache_child_terminate
+  - apache_get_modules
+  - apache_get_version
+  - apache_getenv
+  - apache_note
+  - apache_setenv
+  - diskfreespace
+  - dl
+  - escapeshellarg
+  - escapeshellcmd
+  - exec
+  - ftp_connect
+  - ftp_exec
+  - ftp_get
+  - ftp_login
+  - ftp_nb_fput
+  - ftp_put
+  - ftp_raw
+  - ftp_rawlist
+  - ini_alter
+  - ini_get_all
+  - link
+  - mysql_pconnect
+  - passthru
+  - pcntl_alarm
+  - pcntl_exec
+  - pcntl_fork
+  - pcntl_get_last_error
+  - pcntl_getpriority
+  - pcntl_setpriority
+  - pcntl_signal
+  - pcntl_signal_dispatch
+  - pcntl_sigprocmask
+  - pcntl_sigtimedwait
+  - pcntl_sigwaitinfo
+  - pcntl_strerror
+  - pcntl_wait
+  - pcntl_waitpid
+  - pcntl_wexitstatus
+  - pcntl_wifcontinued
+  - pcntl_wifexited
+  - pcntl_wifsignaled
+  - pcntl_wifstopped
+  - pcntl_wstopsig
+  - pcntl_wtermsig
+  - pfsockopen
+  - phpinfo
+  - popen
+  - posix_getpwuid
+  - posix_kill
+  - posix_mkfifo
+  - posix_setpgid
+  - posix_setsid
+  - posix_setuid
+  - posix_uname
+  - proc_close
+  - proc_get_status
+  - proc_nice
+  - proc_open
+  - proc_terminate
+  - shell_exec
+  - symlink
+  - system
+  - tmpfile
+  - virtual
 
 redis:
   auth:
     enabled: true
     ## Helm will autogenerate a password if you don't set your own one
     # password: TopSecretPaSSword
+
+    image:
+      repository: redis
+      tag: 6.2.4-alpine3.13
+      pullPolicy: IfNotPresent
+
   podAnnotations: {}
+
   podSecurityContext: {}
+
   securityContext:
     readOnlyRootFilesystem: true
+  
   resources: {}
+
   nodeSelector: {}
+
   tolerations: []
+
   affinity: {}
+
   service:
     type: ClusterIP
     port: 6379
-  image:
-    repository: redis
-    tag: 6.2.4-alpine3.13
-    pullPolicy: IfNotPresent
+
+  storage:
+    # storageClass: local-path
+    storageSize: 2G
 
 postgres:
   ## Helm will autogenerate a password if you don't set your own one
@@ -305,24 +356,33 @@ postgres:
   # password: TopSecretPaSSword
   # postgresPassword: TopSecretPaSSword
   # database: nextcloud
+  image:
+    repository: postgres
+    tag: 13.3-alpine
+    pullPolicy: IfNotPresent
+
   podAnnotations: {}
+
   podSecurityContext:
     fsGroup: 70
     runAsUser: 70
     runAsGroup: 70
     runAsNonRoot: true
+
   securityContext:
     readOnlyRootFilesystem: true
+
   resources: {}
+
   nodeSelector: {}
+
   tolerations: []
+
   affinity: {}
+
   service:
     type: ClusterIP
     port: 5432
-  image:
-    repository: postgres
-    tag: 13.3-alpine
-    pullPolicy: IfNotPresent
+
   storage:
     storageSize: 2Gi

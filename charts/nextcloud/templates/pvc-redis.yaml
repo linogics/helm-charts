@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-redis
+spec:
+  {{- if .Values.redis.storage.storageClass }}
+  storageClassName: {{ .Values.redis.storage.storageClass }}
+  {{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.redis.storage.storageSize | default "512Mi" }}

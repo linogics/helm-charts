@@ -1,6 +1,6 @@
 # nextcloud
 
-![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.0.3](https://img.shields.io/badge/AppVersion-21.0.3-informational?style=flat-square)
+![Version: 1.0.3](https://img.shields.io/badge/Version-1.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.0.3](https://img.shields.io/badge/AppVersion-21.0.3-informational?style=flat-square)
 
 Nextcloud Helm Chart by linogics.io
 
@@ -120,6 +120,7 @@ Nextcloud Helm Chart by linogics.io
 | redis.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | redis.service.port | int | `6379` |  |
 | redis.service.type | string | `"ClusterIP"` |  |
+| redis.storage.storageSize | string | `"2G"` |  |
 | redis.tolerations | list | `[]` |  |
 
 ----------------------------------------------

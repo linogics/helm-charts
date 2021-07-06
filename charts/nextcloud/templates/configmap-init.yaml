@@ -46,7 +46,7 @@ data:
         echo "Running occ upgrade command . . ."
         run php nextcloud/occ upgrade
       else
-        echo "Nextcloud is installed and up to date, nothing to do . . ."
+        echo "Nextcloud is installed and present, nothing to do . . ."
       fi
     fi
 
