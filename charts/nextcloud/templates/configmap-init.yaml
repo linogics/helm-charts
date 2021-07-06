@@ -95,7 +95,7 @@ data:
     run php occ config:system:set redis host --value="{{ .Release.Name }}-redis"
     run php occ config:system:set redis port --value="6379"
     run php occ config:system:set redis dbindex --value="0"
-    run php occ config:system:set redis password --value="${REDIS_PASSWORD}"
+    run php occ config:system:set redis password --value="${REDIS_PASSWORD}" >/dev/null 2>&1
     run php occ config:system:set memcache.distributed --value='\\OC\\Memcache\\Redis'
     run php occ config:system:set memcache.locking --value='\\OC\\Memcache\\Redis'
     run php occ config:system:set memcache.local --value='\\OC\\Memcache\\APCu'
@@ -127,5 +127,101 @@ data:
   
     echo "Setting log backend to 'errorlog' . . ."
     run php occ log:manage --backend="errorlog"
- 
+
+    {{- if (default .Values.nextcloud.disableWebUpdater true) }}
+    echo "Disabling WebUpdater . . ."
+    run php occ config:system:set upgrade.disable-web --value='true'
+    {{ end }}
+
+    {{- if .Values.nextcloud.defaultLanguage }}
+    echo "Setting default language to {{ .Values.nextcloud.defaultLanguage }} . . ."
+    run php occ config:system:set default_language --value='{{ .Values.nextcloud.defaultLanguage }}'
+
+    {{- if (default .Values.nextcloud.forceLanguage false) }}
+    echo "Enforcing default language . . ."
+    run php occ config:system:set force_language --value='{{ .Values.nextcloud.defaultLanguage }}'
+    {{ end }}
+    {{ end }}
+
+    {{- if .Values.nextcloud.defaultLocale }}
+    echo "Setting default locale to {{ .Values.nextcloud.defaultLocale }} . . ."
+    run php occ config:system:set default_locale --value='{{ .Values.nextcloud.defaultLocale }}'
+
+    {{- if (default .Values.nextcloud.forceLocale false) }}
+    echo "Enforcing default locale . . ."
+    run php occ config:system:set force_locale --value='{{ .Values.nextcloud.defaultLocale }}'
+    {{ end }}
+    {{ end }}
+
+    {{- if .Values.nextcloud.defaultPhoneRegion }}
+    echo "Setting default PhoneRegion . . ."
+    run php occ config:system:set default_phone_region --value='{{ .Values.nextcloud.defaultPhoneRegion }}'
+    {{ end }}
+
+    {{- if (default .Values.nextcloud.disableKnowledgeBase false) }}
+    echo "Disabling knowledgebase . . ."
+    run php occ config:system:set knowledgebaseenabled --value='false'
+    {{ end }}
+
+    {{- if not (default .Values.nextcloud.allowUserChangeDisplayName true) }}
+    echo "Disabling user ability to change their display name . . ."
+    run php occ config:system:set allow_user_to_change_display_name --value='false'
+    {{ end }}
+
+    {{- if (default .Values.nextcloud.mail.enabled false) }}
+    echo "Configuring E-Mail settings . . ."
+
+    {{- if .Values.nextcloud.mail.domain }}
+    run php occ config:system:set mail_domain --value='{{ .Values.nextcloud.mail.domain }}'
+    {{ end }}
+
+    {{- if .Values.nextcloud.mail.fromAddress }}
+    run php occ config:system:set mail_from_address --value='{{ .Values.nextcloud.mail.fromAddress }}'
+    {{ end }}
+
+    {{- if (default .Values.nextcloud.mail.debug false) }}
+    run php occ config:system:set mail_smtpdebug --value='{{ .Values.nextcloud.mail.debug }}'
+    {{ end }}
+
+    {{- if .Values.nextcloud.mail.plaintextOnly }}
+    run php occ config:system:set mail_send_plaintext_only --value='{{ .Values.nextcloud.mail.plaintextOnly }}'
+    {{ end }}
+
+    {{- if .Values.nextcloud.mail.mode }}
+    run php occ config:system:set mail_smtpmode --value='{{ .Values.nextcloud.mail.mode }}'
+    {{ end }}
+
+    {{- if .Values.nextcloud.mail.smtp.host }}
+    run php occ config:system:set mail_smtphost --value='{{ .Values.nextcloud.mail.smtp.host }}'
+    {{ end }}
+
+    {{- if .Values.nextcloud.mail.smtp.port }}
+    run php occ config:system:set mail_smtpport --value='{{ .Values.nextcloud.mail.smtp.port }}'
+    {{ end }}
+
+    {{- if .Values.nextcloud.mail.smtp.timeout }}
+    run php occ config:system:set mail_smtptimeout --value='{{ .Values.nextcloud.mail.smtp.timeout }}'
+    {{ end }}
+
+    {{- if .Values.nextcloud.mail.smtp.secure }}
+    run php occ config:system:set mail_smtpsecure --value='{{ .Values.nextcloud.mail.smtp.secure }}'
+    {{ end }}
+
+    {{- if (default .Values.nextcloud.mail.auth.enabled false) }}
+    run php occ config:system:set mail_smtpauth --value='true'
+
+    {{- if .Values.nextcloud.mail.auth.type }}
+    run php occ config:system:set mail_smtpauthtype --value='{{ .Values.nextcloud.mail.auth.type }}'
+    {{ end }}
+
+    {{- if .Values.nextcloud.mail.auth.username }}
+    run php occ config:system:set mail_smtpname --value='{{ .Values.nextcloud.mail.auth.username }}'
+    {{ end }}
+
+    {{- if .Values.nextcloud.mail.auth.password }}
+    run php occ config:system:set mail_smtppassword --value='{{ .Values.nextcloud.mail.auth.password }}'
+    {{ end }}
+    {{ end }}
+    {{ end }}
+
     echo "Done!"
