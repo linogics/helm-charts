@@ -33,11 +33,6 @@ nextcloud:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
 
-  strategy:
-    type: Recreate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
   podAnnotations: {}
 
   podSecurityContext:

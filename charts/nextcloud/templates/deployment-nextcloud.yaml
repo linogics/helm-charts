@@ -24,10 +24,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.nextcloud.strategy }}
-      strategy:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       serviceAccountName: {{ include "nextcloud.serviceAccountName" . }}
       initContainers:
         - name: nextcloud-init
