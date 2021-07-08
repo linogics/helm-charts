@@ -15,15 +15,12 @@ spec:
       template:
         spec:
           containers:
-            - name: {{ .Release.Name }}-webcron
-              image: busybox
-              args:
-                - /bin/sh
-                - -c
-                - wget
-                - --spider
-                - --header
-                - "Host: {{ .Values.nextcloud.domain }}"
-                - "http://{{ .Release.Name }}/cron.php"
+          - name: {{ .Release.Name }}-webcron
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - |
+              wget --spider --header 'Host: {{ .Values.nextcloud.domain }}' http://{{ .Release.Name }}/cron.php
           restartPolicy: OnFailure
 {{- end }}
