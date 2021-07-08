@@ -3,6 +3,16 @@ entries:
   nextcloud:
   - apiVersion: v2
     appVersion: 22.0.0
+    created: "2021-07-08T19:53:06.454876212Z"
+    description: Nextcloud Helm Chart by linogics.io
+    digest: 86494e61af394b277005580aef960d3cc089767f38412d21a706b99170fdff5f
+    name: nextcloud
+    type: application
+    urls:
+    - https://github.com/linogics/helm-charts/releases/download/nextcloud-22.0.0-v3/nextcloud-22.0.0-v3.tgz
+    version: 22.0.0-v3
+  - apiVersion: v2
+    appVersion: 22.0.0
     created: "2021-07-08T19:01:59.914819622Z"
     description: Nextcloud Helm Chart by linogics.io
     digest: c6c798d350b297cbc63a6a2fbe4b0a43aa874ec30cb2757db51f6073ce6f6347
@@ -71,4 +81,4 @@ entries:
     urls:
     - https://github.com/linogics/helm-charts/releases/download/nextcloud-1.0.0/nextcloud-1.0.0.tgz
     version: 1.0.0
-generated: "2021-07-08T19:01:59.914853322Z"
+generated: "2021-07-08T19:53:06.454916812Z"
