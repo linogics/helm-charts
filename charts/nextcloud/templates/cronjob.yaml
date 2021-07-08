@@ -20,6 +20,10 @@ spec:
               args:
                 - /bin/sh
                 - -c
-                - wget --spider "http://{{ .Release.Name }}/cron.php"
+                - wget
+                - --spider
+                - --header
+                - "Host: {{ .Values.nextcloud.domain }}"
+                - "http://{{ .Release.Name }}/cron.php"
           restartPolicy: OnFailure
 {{- end }}
