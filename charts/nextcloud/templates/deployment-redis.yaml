@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-redis
+  {{- if .Values.nextcloud.commonAnnotations }}
+  annotations: {{- dict "value" .Values.nextcloud.commonAnnotations "context" $ | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "nextcloud.redis.labels" . | nindent 4 }}
 spec:

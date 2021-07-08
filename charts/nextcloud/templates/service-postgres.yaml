@@ -1,7 +1,11 @@
+{{- if eq .Values.nextcloud.databaseType "pgsql" }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Release.Name }}-postgres
+  {{- if .Values.nextcloud.commonAnnotations }}
+  annotations: {{- dict "value" .Values.nextcloud.commonAnnotations "context" $ | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "nextcloud.labels" . | nindent 4 }}
 spec:
@@ -13,3 +17,4 @@ spec:
       targetPort: postgres
   selector:
     {{- include "nextcloud.postgres.selectorLabels" . | nindent 4 }}
+{{- end }}

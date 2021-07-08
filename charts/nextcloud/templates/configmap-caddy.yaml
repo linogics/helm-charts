@@ -3,6 +3,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-caddy
+  {{- if .Values.nextcloud.commonAnnotations }}
+  annotations: {{- dict "value" .Values.nextcloud.commonAnnotations "context" $ | nindent 4 }}
+  {{- end }}
 data:
   Caddyfile: |
     http://{{ .Values.nextcloud.domain }}:8080 {

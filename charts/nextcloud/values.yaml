@@ -1,6 +1,13 @@
-# Default values for nextcloud.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+## Default values for nextcloud.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+##
+## Please set passwords for:
+## - nextcloud.adminPassword
+## - redis.auth.password
+## - postgres.password
+## - postgres.postgresPassword
+
 
 nextcloud:
   ## Add annotations to all the deployed resources
@@ -24,15 +31,6 @@ nextcloud:
   nameOverride: ""
   fullnameOverride: ""
 
-  serviceAccount:
-    # Specifies whether a service account should be created
-    create: false
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-      
   podAnnotations: {}
 
   podSecurityContext:
@@ -81,13 +79,6 @@ nextcloud:
     #   cpu: 100m
     #   memory: 128Mi
 
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-
   nodeSelector: {}
 
   tolerations: []
@@ -114,6 +105,7 @@ nextcloud:
   domain: my.domain.com
   adminUsername: administrator
   adminPassword: myTopSecretPaSSword
+  databaseType: pgsql # sqlite or pgsql
   defaultPhoneRegion: DE
 
   ## If you're going to use your own secret, make sure that it contains the
@@ -124,6 +116,7 @@ nextcloud:
   ## REDIS_PASSWORD
   ## NC_ADMIN_USERNAME
   ## NC_ADMIN_PASSWORD
+  ## NC_EMAIL_PASSWORD # if nextcloud.email.enabled is set to true
 
   # existingSecret: nextcloud-secrets
 
@@ -234,12 +227,11 @@ php:
 redis:
   auth:
     enabled: true
-    ## Helm will autogenerate a password if you don't set your own one
-    # password: TopSecretPaSSword
+    password: TopSecretRED!SPaSSword # openssl rand -base64 128
 
   image:
     repository: redis
-    tag: 6.2.4-alpine3.13
+    tag: 6.2.4-alpine3.14
     pullPolicy: IfNotPresent
 
   podAnnotations: {}
@@ -266,11 +258,10 @@ redis:
     storageSize: 2G
 
 postgres:
-  ## Helm will autogenerate a password if you don't set your own one
-  # username: nextcloud
-  # password: TopSecretPaSSword
-  # postgresPassword: TopSecretPaSSword
-  # database: nextcloud
+  username: nextcloud
+  password: TopSecretNeXtcloudUserPaSSword # openssl rand -base64 32
+  postgresPassword: TopSecretPostgresUserPaSSword # openssl rand -base64 32
+  database: nextcloud
   image:
     repository: postgres
     tag: 13.3-alpine

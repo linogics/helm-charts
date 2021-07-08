@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}
+  {{- if .Values.nextcloud.commonAnnotations }}
+  annotations: {{- dict "value" .Values.nextcloud.commonAnnotations "context" $ | nindent 4 }}
+  {{- end }}
   labels:
     {{- include "nextcloud.labels" . | nindent 4 }}
 spec:
@@ -19,6 +22,9 @@ spec:
       {{- end }}
       labels:
         {{- include "nextcloud.selectorLabels" . | nindent 8 }}
+        {{- if .Chart.AppVersion }}
+        linogics.io/version: {{ .Release.Name }}-{{ .Chart.AppVersion }}
+        {{- end }}
     spec:
       {{- with .Values.nextcloud.imagePullSecrets }}
       imagePullSecrets:
@@ -40,7 +46,7 @@ spec:
           - mountPath: /app
             name: {{ .Release.Name }}
           - mountPath: /usr/local/etc/php/php.ini
-            name: {{ .Release.Name }}-php-ini
+            name: {{ .Release.Name }}-php
             subPath: php.ini
             readOnly: true
           - mountPath: /tmp/nextcloud-init.sh
@@ -104,11 +110,11 @@ spec:
             - mountPath: /app
               name: {{ .Release.Name }}
             - mountPath: /usr/local/etc/php-fpm.conf
-              name: {{ .Release.Name }}-php-fpm
+              name: {{ .Release.Name }}-php
               subPath: php-fpm.conf
               readOnly: true
             - mountPath: /usr/local/etc/php/php.ini
-              name: {{ .Release.Name }}-php-ini
+              name: {{ .Release.Name }}-php
               subPath: php.ini
               readOnly: true
           resources:
@@ -117,12 +123,9 @@ spec:
         - name: {{ .Release.Name }}
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}
-        - name: {{ .Release.Name }}-php-fpm
+        - name: {{ .Release.Name }}-php
           configMap:
-            name: {{ .Release.Name }}-php-fpm
-        - name: {{ .Release.Name }}-php-ini
-          configMap:
-            name: {{ .Release.Name }}-php-ini
+            name: {{ .Release.Name }}-php
         - name: {{ .Release.Name }}-caddy
           configMap:
             name: {{ .Release.Name }}-caddy

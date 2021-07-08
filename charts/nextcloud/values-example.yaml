@@ -1,6 +1,13 @@
-# Default values for nextcloud.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+## Default values for nextcloud.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
+##
+## Please set passwords for:
+## - nextcloud.adminPassword
+## - redis.auth.password
+## - postgres.password
+## - postgres.postgresPassword
+
 
 nextcloud:
   ## Add annotations to all the deployed resources
@@ -23,15 +30,6 @@ nextcloud:
   imagePullSecrets: []
   nameOverride: ""
   fullnameOverride: ""
-
-  serviceAccount:
-    # Specifies whether a service account should be created
-    create: false
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
 
   podAnnotations: {}
 
@@ -81,13 +79,6 @@ nextcloud:
     #   cpu: 100m
     #   memory: 128Mi
 
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
-
   nodeSelector: {}
 
   tolerations: []
@@ -114,6 +105,7 @@ nextcloud:
   domain: my.domain.com
   adminUsername: nextcloud_admin
   adminPassword: myTopSecretPaSSword
+  databaseType: pgsql # sqlite or pgsql
   defaultPhoneRegion: DE
 
   ## If you're going to use your own secret, make sure that it contains the
@@ -124,45 +116,46 @@ nextcloud:
   ## REDIS_PASSWORD
   ## NC_ADMIN_USERNAME
   ## NC_ADMIN_PASSWORD
+  ## NC_EMAIL_PASSWORD # if nextcloud.email.enabled is set to true
 
   # existingSecret: nextcloud-secrets
 
   ## Remove the skeleton folder after downloading Nextcloud and disable it
   ## in config.php
-  # deleteSkeletonFolder: true
+  deleteSkeletonFolder: true
 
   ## Disable the ability to run the web-based updater
-  # disableWebUpdater: true
+  disableWebUpdater: true
 
   ## Set the default language
   ## German has to forms: de and de_DE for formal German
-  # defaultLanguage: en
-  # forceLanguage: false
+  defaultLanguage: en
+  forceLanguage: false
 
-  # defaultLocale: en_US
-  # forceLocale: false
+  defaultLocale: de_DE
+  forceLocale: false
 
-  # disableKnowledgeBase: false
+  disableKnowledgeBase: true
 
-  # allowUserChangeDisplayName: true
+  allowUserChangeDisplayName: false
 
   mail:
-    enabled: false
-    # domain: my.domain.com
-    # fromAddress: nextcloud@my.domain.com
-    # debug: false
-    # plaintextOnly: false
-    # mode: smtp # currently only smtp mode is supported
-    # smtp:
-      # host: mail.provider.org
-      # port: 25
-      # timeout: 10
-      # secure: tls # ssl = SSL/TLS, tls = STARTTLS
-    # auth:
-      # enabled: true
-      # type: LOGIN # LOGIN or PLAIN
-      # username: buddy@mail.provider.org
-      # password: SuperDuperEMailPaSSword
+    enabled: true
+    domain: my.domain.com
+    fromAddress: nextcloud # domain will automatically appended
+    debug: false
+    plaintextOnly: false
+    mode: smtp # currently only smtp mode is supported
+    smtp:
+      host: mail.provider.org
+      port: 25
+      timeout: 10
+      secure: tls # ssl = SSL/TLS, tls = STARTTLS
+    auth:
+      enabled: true
+      type: LOGIN # LOGIN or PLAIN
+      username: buddy@mail.provider.org
+      password: SuperDuperEMailPaSSword
 
   ## Disable Nextcloud apps during initialization. You can still re-enable
   ## them later.
@@ -193,8 +186,7 @@ nextcloud:
 
   ## Add any custom OCC commands you want to run during initialization:
   ## $ php occ <command>
-  customOCC:
-  - theming:config color '#222222'
+  customOCC: []
 
   webcron:
     enabled: true
@@ -210,11 +202,13 @@ php:
     repository: linogics/nextcloud-php-fpm
     pullPolicy: IfNotPresent
     tag: "8.0.8-alpine3.14"
+
   securityContext:
     runAsUser: 82
     runAsGroup: 82
     runAsNonRoot: true
     readOnlyRootFilesystem: true
+
   resources: {}
     # limits:
     #   cpu: 100m
@@ -222,13 +216,16 @@ php:
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
+
   service:
     port: 9000
+
   pm:
     max_children: 120
     start_servers: 12
     min_spare_servers: 6
     max_spare_servers: 18
+
   opcache:
     enable: 1
     interned_strings_buffer: 8
@@ -236,6 +233,7 @@ php:
     memory_consumption: 128
     save_comments: 1
     revalidate_freq: 1
+
   apc:
     shm_size: 256M
     shm_segments: 1
@@ -244,6 +242,7 @@ php:
     gc_ttl: 3600
     num_files_hint: 1024
     max_file_size: 5M
+
   disable_functions:
   - apache_child_terminate
   - apache_get_modules
@@ -314,12 +313,11 @@ php:
 redis:
   auth:
     enabled: true
-    ## Helm will autogenerate a password if you don't set your own one
-    # password: TopSecretPaSSword
+    password: TopSecretRED!SPaSSword # openssl rand -base64 128
 
     image:
       repository: redis
-      tag: 6.2.4-alpine3.13
+      tag: 6.2.4-alpine3.14
       pullPolicy: IfNotPresent
 
   podAnnotations: {}
@@ -346,11 +344,10 @@ redis:
     storageSize: 2G
 
 postgres:
-  ## Helm will autogenerate a password if you don't set your own one
-  # username: nextcloud
-  # password: TopSecretPaSSword
-  # postgresPassword: TopSecretPaSSword
-  # database: nextcloud
+  username: nextcloud
+  password: TopSecretNeXtcloudUserPaSSword # openssl rand -base64 32
+  postgresPassword: TopSecretPostgresUserPaSSword # openssl rand -base64 32
+  database: nextcloud
   image:
     repository: postgres
     tag: 13.3-alpine

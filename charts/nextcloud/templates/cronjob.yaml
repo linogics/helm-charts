@@ -1,8 +1,11 @@
 {{- if .Values.nextcloud.webcron.enabled -}}
-apiVersion: batch/v1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ .Release.Name }}-webcron
+  {{- if .Values.nextcloud.commonAnnotations }}
+  annotations: {{- dict "value" .Values.nextcloud.commonAnnotations "context" $ | nindent 4 }}
+  {{- end }}
 spec:
   schedule: "*/5 * * * *"
   startingDeadlineSeconds: 240
@@ -14,12 +17,9 @@ spec:
           containers:
             - name: {{ .Release.Name }}-webcron
               image: busybox
-              envFrom:
-              - configMapRef:
-                  name: {{ .Release.Name }}
               args:
                 - /bin/sh
                 - -c
-                - wget --spider --no-check-certificate "https://${NC_DOMAIN}/cron.php"
+                - wget --spider "http://{{ .Release.Name }}/cron.php"
           restartPolicy: OnFailure
 {{- end }}

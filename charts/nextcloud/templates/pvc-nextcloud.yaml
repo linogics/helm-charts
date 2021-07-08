@@ -3,6 +3,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Release.Name }}
+  {{- if .Values.nextcloud.commonAnnotations }}
+  annotations: {{- dict "value" .Values.nextcloud.commonAnnotations "context" $ | nindent 4 }}
+  {{- end }}
 spec:
   {{- if .Values.nextcloud.storage.storageClass }}
   storageClassName: {{ .Values.nextcloud.storage.storageClass }}
