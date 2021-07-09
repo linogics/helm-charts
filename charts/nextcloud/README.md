@@ -1,6 +1,6 @@
 # nextcloud
 
-![Version: 1.0.3](https://img.shields.io/badge/Version-1.0.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 21.0.3](https://img.shields.io/badge/AppVersion-21.0.3-informational?style=flat-square)
+![Version: 22.0.0-v5](https://img.shields.io/badge/Version-22.0.0--v5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 22.0.0](https://img.shields.io/badge/AppVersion-22.0.0-informational?style=flat-square)
 
 Nextcloud Helm Chart by linogics.io
 
@@ -13,12 +13,9 @@ Nextcloud Helm Chart by linogics.io
 | nextcloud.affinity | object | `{}` |  |
 | nextcloud.apps.disable | list | `[]` |  |
 | nextcloud.apps.install | list | `[]` |  |
-| nextcloud.autoscaling.enabled | bool | `false` |  |
-| nextcloud.autoscaling.maxReplicas | int | `100` |  |
-| nextcloud.autoscaling.minReplicas | int | `1` |  |
-| nextcloud.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
 | nextcloud.commonAnnotations | object | `{}` |  |
 | nextcloud.customOCC | list | `[]` |  |
+| nextcloud.databaseType | string | `"pgsql"` |  |
 | nextcloud.defaultPhoneRegion | string | `"DE"` |  |
 | nextcloud.domain | string | `"my.domain.com"` |  |
 | nextcloud.fullnameOverride | string | `""` |  |
@@ -56,13 +53,7 @@ Nextcloud Helm Chart by linogics.io
 | nextcloud.securityContext.runAsUser | int | `82` |  |
 | nextcloud.service.port | int | `80` |  |
 | nextcloud.service.type | string | `"ClusterIP"` |  |
-| nextcloud.serviceAccount.annotations | object | `{}` |  |
-| nextcloud.serviceAccount.create | bool | `false` |  |
-| nextcloud.serviceAccount.name | string | `""` |  |
 | nextcloud.storage.storageSize | string | `"10G"` |  |
-| nextcloud.strategy.rollingUpdate.maxSurge | int | `1` |  |
-| nextcloud.strategy.rollingUpdate.maxUnavailable | int | `1` |  |
-| nextcloud.strategy.type | string | `"Recreate"` |  |
 | nextcloud.tolerations | list | `[]` |  |
 | nextcloud.webcron.enabled | bool | `true` |  |
 | php.apc.gc_ttl | int | `3600` |  |
@@ -93,26 +84,31 @@ Nextcloud Helm Chart by linogics.io
 | php.securityContext.runAsUser | int | `82` |  |
 | php.service.port | int | `9000` |  |
 | postgres.affinity | object | `{}` |  |
+| postgres.database | string | `"nextcloud"` |  |
 | postgres.image.pullPolicy | string | `"IfNotPresent"` |  |
 | postgres.image.repository | string | `"postgres"` |  |
 | postgres.image.tag | string | `"13.3-alpine"` |  |
 | postgres.nodeSelector | object | `{}` |  |
+| postgres.password | string | `"TopSecretNeXtcloudUserPaSSword"` |  |
 | postgres.podAnnotations | object | `{}` |  |
 | postgres.podSecurityContext.fsGroup | int | `70` |  |
 | postgres.podSecurityContext.runAsGroup | int | `70` |  |
 | postgres.podSecurityContext.runAsNonRoot | bool | `true` |  |
 | postgres.podSecurityContext.runAsUser | int | `70` |  |
+| postgres.postgresPassword | string | `"TopSecretPostgresUserPaSSword"` |  |
 | postgres.resources | object | `{}` |  |
 | postgres.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | postgres.service.port | int | `5432` |  |
 | postgres.service.type | string | `"ClusterIP"` |  |
 | postgres.storage.storageSize | string | `"2Gi"` |  |
 | postgres.tolerations | list | `[]` |  |
+| postgres.username | string | `"nextcloud"` |  |
 | redis.affinity | object | `{}` |  |
 | redis.auth.enabled | bool | `true` |  |
+| redis.auth.password | string | `"TopSecretRED!SPaSSword"` |  |
 | redis.image.pullPolicy | string | `"IfNotPresent"` |  |
 | redis.image.repository | string | `"redis"` |  |
-| redis.image.tag | string | `"6.2.4-alpine3.13"` |  |
+| redis.image.tag | string | `"6.2.4-alpine3.14"` |  |
 | redis.nodeSelector | object | `{}` |  |
 | redis.podAnnotations | object | `{}` |  |
 | redis.podSecurityContext | object | `{}` |  |

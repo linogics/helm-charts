@@ -30,7 +30,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "nextcloud.serviceAccountName" . }}
       initContainers:
         - name: nextcloud-init
           image: "{{ .Values.nextcloud.image.init.repository }}:{{ .Values.nextcloud.image.init.tag }}"

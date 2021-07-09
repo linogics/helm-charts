@@ -26,7 +26,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "nextcloud.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.postgres.podSecurityContext | nindent 8 }}
       containers:

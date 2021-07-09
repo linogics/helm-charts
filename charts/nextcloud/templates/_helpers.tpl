@@ -80,17 +80,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
-Create the name of the service account to use
-*/}}
-{{- define "nextcloud.serviceAccountName" -}}
-{{- if .Values.nextcloud.serviceAccount.create }}
-{{- default (include "nextcloud.fullname" .) .Values.nextcloud.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.nextcloud.serviceAccount.name }}
-{{- end }}
-{{- end }}
-
-{{/*
 Get the password secret.
 */}}
 {{- define "nextcloud.secretName" -}}

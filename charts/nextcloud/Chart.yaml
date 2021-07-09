@@ -2,5 +2,5 @@ apiVersion: v2
 name: nextcloud
 description: Nextcloud Helm Chart by linogics.io
 type: application
-version: 22.0.0-v3
+version: 22.0.0-v5
 appVersion: "22.0.0"
