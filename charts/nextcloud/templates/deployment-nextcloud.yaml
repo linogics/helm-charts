@@ -8,9 +8,6 @@ metadata:
   labels:
     {{- include "nextcloud.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.nextcloud.autoscaling.enabled }}
-  replicas: {{ .Values.nextcloud.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "nextcloud.selectorLabels" . | nindent 6 }}
