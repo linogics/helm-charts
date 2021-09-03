@@ -39,7 +39,7 @@ envValueFrom: {}
 #      name: n8n-secret
 #      key: encryption-key
 
-## Unless you set env.N8N_USER_FOLDER the PV will be mounted on /home/node/.n8n
+## Set env.N8N_USER_FOLDER if you enable persistence!
 ##
 persistence:
   enabled: false

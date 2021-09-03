@@ -68,11 +68,7 @@ spec:
           volumeMounts:
           {{- if .Values.persistence.enabled }}
             - name: {{ include "n8n.fullname" . }}
-              {{- $mountPath := "/home/node/.n8n" }}
-              {{- if .Values.env.N8N_USER_FOLDER }}
-                {{- $mountPath := .Values.env.N8N_USER_FOLDER }}
-              {{- end }}
-              mountPath: {{ $mountPath }}
+              mountPath: {{ .Values.env.N8N_USER_FOLDER }}
             {{- with .Values.volumeMounts }}
               {{- toYaml . | nindent 12 }}
             {{- end }}
