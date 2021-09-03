@@ -1,0 +1,26 @@
+apiVersion: v2
+name: n8n
+description: A Helm chart for Kubernetes
+sources:
+  - https://n8n.io/
+  - https://github.com/n8n-io/n8n
+type: application
+version: 0.112.0-v1
+appVersion: "0.112.0"
+dependencies:
+  - name: postgresql
+    version: 10.9.4
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+  - name: mysql
+    version: 8.8.6
+    repository: https://charts.bitnami.com/bitnami
+    condition: mysql.enabled
+  - name: mariadb
+    version: 9.4.4
+    repository: https://charts.bitnami.com/bitnami
+    condition: mariadb.enabled
+  - name: redis
+    version: 15.3.1
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled

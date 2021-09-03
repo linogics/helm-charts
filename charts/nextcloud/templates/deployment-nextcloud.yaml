@@ -32,7 +32,7 @@ spec:
           image: "{{ .Values.nextcloud.image.init.repository }}:{{ .Values.nextcloud.image.init.tag }}"
           command: ["/bin/sh"]
           args: ["/tmp/nextcloud-init.sh"]
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           envFrom:
           - configMapRef:
               name: {{ .Release.Name }}
