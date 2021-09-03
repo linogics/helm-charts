@@ -77,6 +77,12 @@ spec:
               {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: {{ include "n8n.fullname" . }}
+          persistentVolumeClaim:
+            claimName: {{ include "n8n.fullname" . }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -89,3 +95,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
