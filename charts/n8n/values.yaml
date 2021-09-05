@@ -39,13 +39,16 @@ envValueFrom: {}
 #      name: n8n-secret
 #      key: encryption-key
 
+## It is recommended to enable persistence otherwise config and sqlite
+## database are stored in a emptyDir. Your data will be lost after pod restart!
+##
 persistence:
   enabled: false
   annotations: {}
-  # existingClaim: ""
-  # accessMode: ReadWriteOnce
+  accessMode: ReadWriteOnce
+  size: 2Gi
   # storageClass: "-"
-  size: 5Gi
+  # existingClaim: ""
 
 extraVolumes: []
 extraVolumeMounts: []

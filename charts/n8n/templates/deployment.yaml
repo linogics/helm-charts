@@ -66,28 +66,26 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- if or .Values.persistence.enabled .Values.extraVolumeMounts }}
           volumeMounts:
-            {{- if or .Values.persistence.enabled }}
-            {{- $mountPath := "/root"}}
+            {{- $mountPath := "/home/node"}}
             {{- if .Values.env.N8N_USER_FOLDER }}
               {{- $mountPath = .Values.env.N8N_USER_FOLDER }}
             {{- end }}
             - name: {{ include "n8n.fullname" . }}
               mountPath: {{ $mountPath }}
-            {{- end }}
             {{- with .Values.extraVolumeMounts }}
               {{- toYaml . | nindent 12 }}
             {{- end }}
-          {{- end }}
-      {{- if or .Values.persistence.enabled .Values.extraVolumeMounts }}
       volumes:
         - name: {{ include "n8n.fullname" . }}
+          {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ include "n8n.fullname" . }}
-        {{- with .Values.extraVolumes }}
-          {{- toYaml . | nindent 8 }}
-        {{- end }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

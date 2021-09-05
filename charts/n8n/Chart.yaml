@@ -5,7 +5,7 @@ sources:
   - https://n8n.io/
   - https://github.com/n8n-io/n8n
 type: application
-version: 0.136.0-v5
+version: 0.136.0-v6
 appVersion: "0.136.0"
 dependencies:
   - name: postgresql
