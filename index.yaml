@@ -3,6 +3,36 @@ entries:
   n8n:
   - apiVersion: v2
     appVersion: 0.136.0
+    created: "2021-09-05T09:49:40.915775494Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.9.4
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.8.6
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.4.4
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.3.1
+    description: A Helm chart for Kubernetes
+    digest: 987649a57b7df9be3d5c27fe1ab2aa5535027ad71d56d58e701f2cd0bb709695
+    name: n8n
+    sources:
+    - https://n8n.io/
+    - https://github.com/n8n-io/n8n
+    type: application
+    urls:
+    - https://github.com/linogics/helm-charts/releases/download/n8n-0.136.0-v5/n8n-0.136.0-v5.tgz
+    version: 0.136.0-v5
+  - apiVersion: v2
+    appVersion: 0.136.0
     created: "2021-09-04T19:19:40.514607915Z"
     dependencies:
     - condition: postgresql.enabled
@@ -202,4 +232,4 @@ entries:
     urls:
     - https://github.com/linogics/helm-charts/releases/download/nextcloud-22.0.0-v3/nextcloud-22.0.0-v3.tgz
     version: 22.0.0-v3
-generated: "2021-09-04T19:19:40.514648115Z"
+generated: "2021-09-05T09:49:40.915825194Z"
