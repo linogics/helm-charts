@@ -2,7 +2,7 @@ apiVersion: v2
 name: n8n
 description: A N8N Helm chart for Kubernetes. n8n is a free and open fair-code licensed node-based Workflow Automation Tool.
 type: application
-version: 0.136.0-v6
+version: 0.136.0
 appVersion: "0.136.0"
 
 keywords:
