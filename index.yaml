@@ -3,6 +3,44 @@ entries:
   n8n:
   - apiVersion: v2
     appVersion: 0.136.0
+    created: "2021-09-12T09:57:06.556143102Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 10.9.4
+    - condition: mysql.enabled
+      name: mysql
+      repository: https://charts.bitnami.com/bitnami
+      version: 8.8.6
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.4.4
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.3.1
+    description: A N8N Helm chart for Kubernetes. n8n is a free and open fair-code
+      licensed node-based Workflow Automation Tool.
+    digest: 5970920eea00d060c9233af7bc20cafbf7245d78ff66037edbb76e235db69035
+    home: https://github.com/linogics/helm-charts/tree/master/charts/n8n
+    icon: https://avatars.githubusercontent.com/u/45487711?s=200&v=4
+    keywords:
+    - n8n
+    - workflow
+    - automation
+    name: n8n
+    sources:
+    - https://n8n.io/
+    - https://github.com/n8n-io/n8n
+    - https://github.com/linogics/helm-charts/tree/master/charts/n8n
+    type: application
+    urls:
+    - https://github.com/linogics/helm-charts/releases/download/n8n-0.136.0/n8n-0.136.0.tgz
+    version: 0.136.0
+  - apiVersion: v2
+    appVersion: 0.136.0
     created: "2021-09-05T11:59:21.000784493Z"
     dependencies:
     - condition: postgresql.enabled
@@ -80,4 +118,4 @@ entries:
     urls:
     - https://github.com/linogics/helm-charts/releases/download/nextcloud-22.0.0-v7/nextcloud-22.0.0-v7.tgz
     version: 22.0.0-v7
-generated: "2021-09-05T18:08:47.26295755Z"
+generated: "2021-09-12T09:57:06.556156302Z"
